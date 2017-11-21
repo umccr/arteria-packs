@@ -14,12 +14,13 @@ class IncomingSensor(RunfolderSensor):
         self._client = None
 
     def setup(self):
-        self._infolog("setup")
+        self._infolog("Setting up IncomingSensor")
         try:
-            self._load_config()
-            client_urls = [x['url'] for x in self.config["incoming_svc_urls"]]
+            config_values = self._config.get("incoming_svc_urls", None) or None
+            self._infolog("Retrieved config values: {0}".format(config_values))
+            client_urls = [x['url'] for x in config_values]
             # copy all further keys of every item over to self._hostconfigs
-            for x in self.config["incoming_svc_urls"]:
+            for x in config_values:
                 self._hostconfigs[x['url']] = {}
                 for y in x:
                     if y != 'url':
@@ -31,4 +32,3 @@ class IncomingSensor(RunfolderSensor):
             # they're not in /var/log/st2
             self._logger.error(str(ex))
         self._infolog("setup finished")
-
